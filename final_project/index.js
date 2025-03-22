@@ -11,7 +11,14 @@ app.use(express.json());
 app.use("/customer",session({secret:"fingerprint_customer",resave: true, saveUninitialized: true}))
 
 app.use("/customer/auth/*", function auth(req,res,next){
-//Write the authenication mechanism here
+    // Check if a session exists and if the access token is present
+    if (req.session && req.session.accessToken) {
+        // Token exists, proceed
+        next();
+    } else {
+        // If no token is found, return a 401 Unauthorized error
+        return res.status(401).json({ message: "Unauthorized access, please log in" });
+    }
 });
  
 const PORT =5000;

@@ -12,20 +12,42 @@ public_users.post("/register", (req,res) => {
 
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  res.send(JSON.stringify(books, null, 2));
 });
 
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
- });
+    const isbn = req.params.isbn.replace(':', ''); // Retrieve ISBN from the request
+    const book = books[isbn]; // Lookup the book directly using the key
+
+    if (book) {
+        res.json(book); // If found, respond with the book details
+    } else {
+        res.status(404).json({ message: "Book not found" }); 
+    }
+    console.log("Requested ISBN:", req.params.isbn);
+});
   
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+    const author = req.params.author.replace(':', ''); // Retrieve the author from the request parameters
+    const matchingBooks = []; // Array to store books by the given author
+
+    // Iterate through the books object
+    for (const key in books) {
+        if (books[key].author === author) {
+            matchingBooks.push(books[key]); 
+        }
+    }
+
+    // Check if any books by the author were found
+    if (matchingBooks.length > 0) {
+        res.json(matchingBooks); // Return the matching books
+    } else {
+        res.status(404).json({ message: "No books found for the specified author" });
+    }
+    console.log("Requested author:", author);
+
 });
 
 // Get all books based on title
